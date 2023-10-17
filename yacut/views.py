@@ -37,7 +37,7 @@ def index_view():
         if custom_id:
             if URLMap.query.filter_by(short=custom_id).first():
                 flash(
-                    f'Предложенный вариант короткой ссылки уже существует.',
+                    'Предложенный вариант короткой ссылки уже существует.',
                     'already_exists',
                 )
                 return render_template('yacut.html', form=form)
