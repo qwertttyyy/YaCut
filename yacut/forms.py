@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, URL, Regexp
 
-from yacut.constants import CUSTOM_ID_REGEX, CUSTOM_ID_LENGTH
+from .constants import SHORT_LINK_VALIDATION_REGEX, MAX_SHORT_LINK_LENGTH
 
 
 class URLForm(FlaskForm):
@@ -16,8 +16,11 @@ class URLForm(FlaskForm):
     custom_id = StringField(
         'Ваш вариант короткой ссылки',
         validators=[
-            Length(1, CUSTOM_ID_LENGTH),
-            Regexp(CUSTOM_ID_REGEX, message='Некорректная короткая ссылка'),
+            Length(1, MAX_SHORT_LINK_LENGTH),
+            Regexp(
+                SHORT_LINK_VALIDATION_REGEX,
+                message='Некорректная короткая ссылка',
+            ),
             Optional(),
         ],
     )

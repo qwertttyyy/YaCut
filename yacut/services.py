@@ -1,30 +1,31 @@
+import re
 from random import choice
 from string import ascii_letters, digits
 
 from flask import url_for
 
-from yacut.constants import ID_SIZE
-from yacut.forms import URLForm
-from yacut.models import URLMap
+from yacut.constants import (
+    GENERATED_SHORT_LINK_LENGTH,
+    SHORT_LINK_VALIDATION_REGEX,
+)
+from .models import URLMap
 from . import db
+from .exceptions import (
+    EmptyDataError,
+    NoRequiredParameterError,
+    ValidationError,
+)
 
 
 class URL:
-    def __init__(self, data=None):
+    def __init__(self, data=None, url=None, custom_id=None):
         self.data = data
-        self.url = None
-        self.custom_id = None
-
-    def get_data(self):
-        if not self.data:
-            return None
-        if isinstance(self.data, URLForm):
-            self.url = self.data.original_link.data
-            self.custom_id = self.data.custom_id.data
-        else:
+        if self.data:
             self.url = self.data.get('url')
             self.custom_id = self.data.get('custom_id')
-        return self
+        else:
+            self.url = url
+            self.custom_id = custom_id
 
     def get_url(self, short_id=None):
         return URLMap.query.filter_by(
@@ -32,7 +33,17 @@ class URL:
         ).first()
 
     def get_short_link(self):
-        if not self.custom_id:
+        if not self.data and not self.url and not self.custom_id:
+            raise EmptyDataError()
+        if not self.url:
+            raise NoRequiredParameterError()
+        if self.custom_id:
+            if not re.fullmatch(
+                SHORT_LINK_VALIDATION_REGEX,
+                self.custom_id if self.custom_id else '',
+            ):
+                raise ValidationError()
+        else:
             self.custom_id = self.get_unique_short_id()
             while self.get_url():
                 self.custom_id = self.get_unique_short_id()
@@ -44,5 +55,5 @@ class URL:
     @staticmethod
     def get_unique_short_id():
         chars = ascii_letters + digits
-        id = ''.join(choice(chars) for _ in range(ID_SIZE))
+        id = ''.join(choice(chars) for _ in range(GENERATED_SHORT_LINK_LENGTH))
         return id
