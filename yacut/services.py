@@ -11,21 +11,15 @@ from yacut.constants import (
 from .models import URLMap
 from . import db
 from .exceptions import (
-    EmptyDataError,
     NoRequiredParameterError,
     ValidationError,
 )
 
 
 class URL:
-    def __init__(self, data=None, url=None, custom_id=None):
-        self.data = data
-        if self.data:
-            self.url = self.data.get('url')
-            self.custom_id = self.data.get('custom_id')
-        else:
-            self.url = url
-            self.custom_id = custom_id
+    def __init__(self, url=None, custom_id=None):
+        self.custom_id = custom_id
+        self.url = url
 
     def get_url(self, short_id=None):
         return URLMap.query.filter_by(
@@ -33,8 +27,6 @@ class URL:
         ).first()
 
     def get_short_link(self):
-        if not self.data and not self.url and not self.custom_id:
-            raise EmptyDataError()
         if not self.url:
             raise NoRequiredParameterError()
         if self.custom_id:

@@ -1,7 +1,3 @@
-class EmptyDataError(Exception):
-    pass
-
-
 class NoRequiredParameterError(Exception):
     pass
 

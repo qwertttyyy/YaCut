@@ -4,7 +4,6 @@ from sqlalchemy.exc import IntegrityError
 from . import app
 from .error_handlers import InvalidAPIUsage
 from .exceptions import (
-    EmptyDataError,
     NoRequiredParameterError,
     ValidationError,
 )
@@ -22,10 +21,12 @@ def get_url(id):
 @app.route('/api/id/', methods=['POST'])
 def add_url():
     data = request.get_json()
-    try:
-        short_link = URL(data=data).get_short_link()
-    except EmptyDataError:
+    if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
+    try:
+        short_link = URL(
+            data.get('url'), data.get('custom_id')
+        ).get_short_link()
     except NoRequiredParameterError:
         raise InvalidAPIUsage('\"url\" является обязательным полем!')
     except ValidationError:

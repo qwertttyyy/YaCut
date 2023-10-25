@@ -12,7 +12,7 @@ def index_view():
     if form.validate_on_submit():
         try:
             short_link = URL(
-                url=form.original_link.data, custom_id=form.custom_id.data
+                form.original_link.data, form.custom_id.data
             ).get_short_link()
         except IntegrityError:
             flash(
