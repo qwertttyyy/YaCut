@@ -36,16 +36,16 @@ class URL:
             ):
                 raise ValidationError()
         else:
-            self.custom_id = self.get_unique_short_id()
+            self.custom_id = self.generate_short_id()
             while self.get_url():
-                self.custom_id = self.get_unique_short_id()
+                self.custom_id = self.generate_short_id()
         new_url_object = URLMap(original=self.url, short=self.custom_id)
         db.session.add(new_url_object)
         db.session.commit()
         return url_for('redirect_view', id=self.custom_id, _external=True)
 
     @staticmethod
-    def get_unique_short_id():
+    def generate_short_id():
         chars = ascii_letters + digits
         id = ''.join(choice(chars) for _ in range(GENERATED_SHORT_LINK_LENGTH))
         return id
