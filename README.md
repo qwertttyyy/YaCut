@@ -33,7 +33,7 @@ YaCut API позволяет создавать и получать коротк
 1. Клонирование репозитория:
 
 ```bash
-git clone git@github.com:qwertttyyy/yacut.git
+git clone git@github.com:qwertttyyy/YaCut.git
 ```
 
 2. Создать и активировать виртуальное окружение:
